@@ -20,11 +20,9 @@ import {
   RuntimeValue,
   RuntimeContext,
   ForLoopContext,
-  RuntimeError
+  RuntimeError,
+  ArrayElement,
 } from './types.ts';
-
-// Type for multi-dimensional arrays
-type ArrayElement = RuntimeValue | ArrayElement[];
 
 export class Interpreter {
   private context: RuntimeContext;
@@ -218,9 +216,9 @@ export class Interpreter {
 
     const forLoop: ForLoopContext = {
       variable: statement.variable,
-      current: start.value,
-      end: end.value,
-      step: step.value,
+      current: start.value as number,
+      end: end.value as number,
+      step: step.value as number,
       startLine: this.context.programCounter
     };
 
@@ -298,7 +296,7 @@ export class Interpreter {
         if (dimValue.type !== 'number') {
           throw new RuntimeError('Array dimensions must be numbers', statement.lineNumber);
         }
-        dimensions.push(Math.floor(dimValue.value));
+        dimensions.push(Math.floor(dimValue.value as number));
       }
 
       // Create multi-dimensional array
@@ -424,10 +422,10 @@ export class Interpreter {
         if (indexValue.type !== 'number') {
           throw new RuntimeError('Array indices must be numbers');
         }
-        indices.push(Math.floor(indexValue.value));
+        indices.push(Math.floor(indexValue.value as number));
       }
 
-      return this.getArrayElement(array.value, indices);
+      return this.getArrayElement(array.value as ArrayElement[], indices);
     } else {
       // Simple variable
       const value = this.context.variables.get(variable.name);
@@ -455,10 +453,10 @@ export class Interpreter {
         if (indexValue.type !== 'number') {
           throw new RuntimeError('Array indices must be numbers');
         }
-        indices.push(Math.floor(indexValue.value));
+        indices.push(Math.floor(indexValue.value as number));
       }
 
-      this.setArrayElement(array.value, indices, value);
+      this.setArrayElement(array.value as ArrayElement[], indices, value);
     } else {
       // Simple variable assignment
       this.context.variables.set(variable.name, value);
@@ -521,10 +519,10 @@ export class Interpreter {
 
   private toNumber(value: RuntimeValue): number {
     if (value.type === 'number') {
-      return value.value;
+      return value.value as number;
     }
     if (value.type === 'string') {
-      const num = parseFloat(value.value);
+      const num = parseFloat(value.value as string);
       return isNaN(num) ? 0 : num;
     }
     return 0;
@@ -532,17 +530,17 @@ export class Interpreter {
 
   private valueToString(value: RuntimeValue): string {
     if (value.type === 'string') {
-      return value.value;
+      return value.value as string;
     }
     if (value.type === 'number') {
-      return value.value.toString();
+      return (value.value as number).toString();
     }
     return '';
   }
 
   private compareValues(left: RuntimeValue, right: RuntimeValue): number {
     if (left.type === 'string' && right.type === 'string') {
-      return left.value.localeCompare(right.value);
+      return (left.value as string).localeCompare(right.value as string);
     }
 
     const leftNum = this.toNumber(left);

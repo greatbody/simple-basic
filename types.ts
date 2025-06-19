@@ -191,9 +191,11 @@ export interface FunctionCall extends Expression {
 }
 
 // Runtime types
+export type ArrayElement = RuntimeValue | ArrayElement[];
+
 export interface RuntimeValue {
   type: 'number' | 'string' | 'array';
-  value: any;
+  value: number | string | ArrayElement[];
 }
 
 export interface RuntimeContext {
