@@ -35,20 +35,20 @@ export class Parser {
 
   parse(): Program {
     const statements: Statement[] = [];
-    
+
     while (!this.isAtEnd()) {
       // Skip newlines at the top level
       if (this.check(TokenType.NEWLINE)) {
         this.advance();
         continue;
       }
-      
+
       const stmt = this.statement();
       if (stmt) {
         statements.push(stmt);
       }
     }
-    
+
     return {
       type: 'Program',
       statements
@@ -102,7 +102,7 @@ export class Parser {
 
       // Consume optional newline
       this.match(TokenType.NEWLINE);
-      
+
       return stmt;
     } catch (error) {
       // Skip to next line on error
@@ -117,11 +117,15 @@ export class Parser {
 
     if (!this.check(TokenType.NEWLINE) && !this.isAtEnd()) {
       expressions.push(this.expression());
-      
+
       while (this.match(TokenType.COMMA, TokenType.SEMICOLON)) {
-        separator = this.previous().type === TokenType.COMMA ? 'comma' : 'semicolon';
+        const currentSeparator = this.previous().type === TokenType.COMMA ? 'comma' : 'semicolon';
         if (!this.check(TokenType.NEWLINE) && !this.isAtEnd()) {
           expressions.push(this.expression());
+        } else {
+          // If there's no expression after the separator, this separator determines the ending behavior
+          separator = currentSeparator;
+          break;
         }
       }
     }
@@ -159,7 +163,7 @@ export class Parser {
 
   private gotoStatement(): GotoStatement {
     const lineNumber = this.consume(TokenType.NUMBER, "Expected line number after GOTO");
-    
+
     return {
       type: 'GotoStatement',
       lineNumber: parseInt(lineNumber.value)
@@ -169,7 +173,7 @@ export class Parser {
   private ifStatement(): IfStatement {
     const condition = this.expression();
     this.consume(TokenType.THEN, "Expected THEN after IF condition");
-    
+
     const thenStatement = this.statement();
     if (!thenStatement) {
       throw new SyntaxError("Expected statement after THEN", this.peek().line, this.peek().column);
@@ -197,7 +201,7 @@ export class Parser {
     const start = this.expression();
     this.consume(TokenType.TO, "Expected TO after FOR start value");
     const end = this.expression();
-    
+
     let step: Expression | undefined;
     if (this.match(TokenType.STEP)) {
       step = this.expression();
@@ -227,7 +231,7 @@ export class Parser {
 
   private dataStatement(): DataStatement {
     const values: (string | number)[] = [];
-    
+
     do {
       if (this.check(TokenType.NUMBER)) {
         values.push(parseFloat(this.advance().value));
@@ -246,7 +250,7 @@ export class Parser {
 
   private readStatement(): ReadStatement {
     const variables: Variable[] = [];
-    
+
     do {
       variables.push(this.variable());
     } while (this.match(TokenType.COMMA));
@@ -271,18 +275,18 @@ export class Parser {
 
   private dimStatement(): DimStatement {
     const arrays: ArrayDeclaration[] = [];
-    
+
     do {
       const name = this.consume(TokenType.IDENTIFIER, "Expected array name").value;
       this.consume(TokenType.LEFT_PAREN, "Expected '(' after array name");
-      
+
       const dimensions: Expression[] = [];
       do {
         dimensions.push(this.expression());
       } while (this.match(TokenType.COMMA));
-      
+
       this.consume(TokenType.RIGHT_PAREN, "Expected ')' after array dimensions");
-      
+
       arrays.push({ name, dimensions });
     } while (this.match(TokenType.COMMA));
 
@@ -300,7 +304,7 @@ export class Parser {
 
   private remStatement(): RemStatement {
     let comment = '';
-    
+
     // Read everything until newline as comment
     while (!this.check(TokenType.NEWLINE) && !this.isAtEnd()) {
       comment += this.advance().value + ' ';
@@ -327,7 +331,7 @@ export class Parser {
         left: expr,
         operator,
         right
-      };
+      } as BinaryExpression;
     }
 
     return expr;
@@ -344,7 +348,7 @@ export class Parser {
         left: expr,
         operator,
         right
-      };
+      } as BinaryExpression;
     }
 
     return expr;
@@ -361,7 +365,7 @@ export class Parser {
         left: expr,
         operator,
         right
-      };
+      } as BinaryExpression;
     }
 
     return expr;
@@ -378,7 +382,7 @@ export class Parser {
         left: expr,
         operator,
         right
-      };
+      } as BinaryExpression;
     }
 
     return expr;
@@ -395,7 +399,7 @@ export class Parser {
         left: expr,
         operator,
         right
-      };
+      } as BinaryExpression;
     }
 
     return expr;
@@ -412,7 +416,7 @@ export class Parser {
         left: expr,
         operator,
         right
-      };
+      } as BinaryExpression;
     }
 
     return expr;
@@ -426,7 +430,7 @@ export class Parser {
         type: 'UnaryExpression',
         operator,
         operand: right
-      };
+      } as UnaryExpression;
     }
 
     return this.power();
@@ -443,7 +447,7 @@ export class Parser {
         left: expr,
         operator,
         right
-      };
+      } as BinaryExpression;
     }
 
     return expr;
@@ -454,14 +458,14 @@ export class Parser {
       return {
         type: 'NumberLiteral',
         value: parseFloat(this.previous().value)
-      };
+      } as NumberLiteral;
     }
 
     if (this.match(TokenType.STRING)) {
       return {
         type: 'StringLiteral',
         value: this.previous().value
-      };
+      } as StringLiteral;
     }
 
     if (this.check(TokenType.IDENTIFIER)) {
@@ -532,7 +536,7 @@ export class Parser {
 
   private consume(type: TokenType, message: string): Token {
     if (this.check(type)) return this.advance();
-    
+
     const token = this.peek();
     throw new SyntaxError(message, token.line, token.column);
   }
@@ -542,7 +546,7 @@ export class Parser {
 
     while (!this.isAtEnd()) {
       if (this.previous().type === TokenType.NEWLINE) return;
-      
+
       switch (this.peek().type) {
         case TokenType.PRINT:
         case TokenType.LET:
