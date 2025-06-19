@@ -1,0 +1,17 @@
+{
+  "tasks": {
+    "start": "deno run --allow-read main.ts",
+    "run": "deno run --allow-read main.ts",
+    "test": "deno run test.ts"
+  },
+  "fmt": {
+    "files": {
+      "include": ["*.ts", "*.js"]
+    }
+  },
+  "lint": {
+    "files": {
+      "include": ["*.ts", "*.js"]
+    }
+  }
+}
