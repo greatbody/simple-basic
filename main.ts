@@ -40,7 +40,7 @@ class BasicInterpreter {
 
       // Print output
       for (const line of output) {
-        console.log(line);
+        Deno.stdout.writeSync(new TextEncoder().encode(line));
       }
     } catch (error) {
       if (error instanceof BasicError) {
