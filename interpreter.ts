@@ -12,8 +12,6 @@ import {
   ReadStatement,
   RestoreStatement,
   DimStatement,
-  EndStatement,
-  RemStatement,
   BinaryExpression,
   UnaryExpression,
   NumberLiteral,
@@ -24,6 +22,9 @@ import {
   ForLoopContext,
   RuntimeError
 } from './types.ts';
+
+// Type for multi-dimensional arrays
+type ArrayElement = RuntimeValue | ArrayElement[];
 
 export class Interpreter {
   private context: RuntimeContext;
@@ -67,7 +68,8 @@ export class Interpreter {
       if (error instanceof RuntimeError) {
         this.output.push(`Runtime Error: ${error.message}`);
       } else {
-        this.output.push(`Error: ${error.message}`);
+        const message = error instanceof Error ? error.message : String(error);
+        this.output.push(`Error: ${message}`);
       }
     }
 
@@ -348,12 +350,13 @@ export class Interpreter {
       case '*':
         return { type: 'number', value: this.toNumber(left) * this.toNumber(right) };
 
-      case '/':
+      case '/': {
         const divisor = this.toNumber(right);
         if (divisor === 0) {
           throw new RuntimeError('Division by zero');
         }
         return { type: 'number', value: this.toNumber(left) / divisor };
+      }
 
       case '^':
       case '**':
@@ -441,7 +444,7 @@ export class Interpreter {
   private assignVariable(variable: Variable, value: RuntimeValue): void {
     if (variable.indices) {
       // Array assignment
-      let array = this.context.arrays.get(variable.name);
+      const array = this.context.arrays.get(variable.name);
       if (!array) {
         throw new RuntimeError(`Undefined array: ${variable.name}`);
       }
@@ -477,7 +480,7 @@ export class Interpreter {
     return variables[variables.length - 1];
   }
 
-  private createMultiDimensionalArray(dimensions: number[]): any {
+  private createMultiDimensionalArray(dimensions: number[]): ArrayElement[] {
     if (dimensions.length === 1) {
       return new Array(dimensions[0] + 1).fill({ type: 'number', value: 0 });
     }
@@ -489,23 +492,31 @@ export class Interpreter {
     return result;
   }
 
-  private getArrayElement(array: any, indices: number[]): RuntimeValue {
-    let current = array;
+  private getArrayElement(array: ArrayElement[], indices: number[]): RuntimeValue {
+    let current: ArrayElement | ArrayElement[] = array;
     for (const index of indices) {
-      if (!current[index]) {
+      if (Array.isArray(current)) {
+        if (!current[index]) {
+          return { type: 'number', value: 0 };
+        }
+        current = current[index];
+      } else {
         return { type: 'number', value: 0 };
       }
-      current = current[index];
     }
-    return current;
+    return Array.isArray(current) ? { type: 'number', value: 0 } : current;
   }
 
-  private setArrayElement(array: any, indices: number[], value: RuntimeValue): void {
-    let current = array;
+  private setArrayElement(array: ArrayElement[], indices: number[], value: RuntimeValue): void {
+    let current: ArrayElement | ArrayElement[] = array;
     for (let i = 0; i < indices.length - 1; i++) {
-      current = current[indices[i]];
+      if (Array.isArray(current)) {
+        current = current[indices[i]];
+      }
     }
-    current[indices[indices.length - 1]] = value;
+    if (Array.isArray(current)) {
+      current[indices[indices.length - 1]] = value;
+    }
   }
 
   private toNumber(value: RuntimeValue): number {
