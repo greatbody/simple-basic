@@ -7,7 +7,7 @@ A simple BASIC language interpreter implemented in TypeScript for Deno runtime.
 - **Line Numbers**: Traditional BASIC line numbering system
 - **Variables**: Numeric and string variables (string variables end with $)
 - **Arrays**: One-dimensional and multi-dimensional arrays with DIM statement
-- **Control Flow**: 
+- **Control Flow**:
   - GOTO statements for unconditional jumps
   - IF-THEN-ELSE conditional statements
   - FOR-NEXT loops with optional STEP
