@@ -20,7 +20,7 @@ class BasicInterpreter {
       if (error instanceof Deno.errors.NotFound) {
         console.error(`Error: File '${filename}' not found.`);
       } else {
-        console.error(`Error reading file: ${error.message}`);
+        console.error(`Error reading file: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   }
@@ -49,7 +49,7 @@ class BasicInterpreter {
           console.error(`  at line ${error.line}`);
         }
       } else {
-        console.error(`Error: ${error.message}`);
+        console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   }
