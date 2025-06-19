@@ -1,8 +1,12 @@
 # Simple BASIC Interpreter
 
-A simple BASIC language interpreter implemented in TypeScript for Deno runtime.
+[![Deno](https://img.shields.io/badge/deno-v1.0+-green.svg)](https://deno.land/)
+[![TypeScript](https://img.shields.io/badge/typescript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+A simple yet feature-rich BASIC language interpreter implemented in TypeScript for the Deno runtime. This project provides an educational implementation of a classic programming language with modern tooling.
+
+## ✨ Features
 
 - **Line Numbers**: Traditional BASIC line numbering system
 - **Variables**: Numeric and string variables (string variables end with $)
@@ -20,34 +24,61 @@ A simple BASIC language interpreter implemented in TypeScript for Deno runtime.
 - **Output**: PRINT statement with comma and semicolon separators
 - **Comments**: REM statements
 
-## Installation
+## 🚀 Quick Start
 
-Make sure you have Deno installed. If not, install it from [deno.land](https://deno.land/).
+### Prerequisites
 
-## Usage
+- [Deno](https://deno.land/) v1.0 or higher
 
-### Running from a file
+### Installation
 
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/greatbody/simple-basic.git
+   cd simple-basic
+   ```
+
+2. **Run tests to verify installation:**
+   ```bash
+   deno run --allow-read test.ts
+   ```
+
+## 📖 Usage
+
+### Running BASIC Programs
+
+**Execute a BASIC file:**
 ```bash
 deno run --allow-read main.ts examples/hello.bas
 ```
 
-### Interactive mode
-
+**Interactive REPL mode:**
 ```bash
 deno run --allow-read main.ts
 ```
 
-In interactive mode, you can:
-- Enter BASIC commands directly for immediate execution
-- Use line numbers to build a program
-- Use `RUN` to execute the program
-- Use `LIST` to display the current program
-- Use `NEW` to clear the program
-- Use `HELP` to see available commands
-- Use `EXIT` to quit
+**Make the interpreter executable (optional):**
+```bash
+chmod +x main.ts
+./main.ts examples/hello.bas
+```
 
-## BASIC Language Syntax
+### Interactive Mode Commands
+
+| Command | Description                 |
+| ------- | --------------------------- |
+| `RUN`   | Execute the current program |
+| `LIST`  | Display the current program |
+| `NEW`   | Clear the current program   |
+| `HELP`  | Show available commands     |
+| `EXIT`  | Quit the interpreter        |
+
+**Interactive mode supports:**
+- Direct command execution (immediate mode)
+- Line-numbered program building
+- Program editing and execution
+
+## 📝 BASIC Language Reference
 
 ### Variables
 ```basic
@@ -89,47 +120,104 @@ In interactive mode, you can:
 30 PRINT A; B; C          REM Semicolon separator (no space)
 ```
 
-## Examples
+## 📁 Examples
 
-The `examples/` directory contains several demonstration programs:
+The `examples/` directory contains demonstration programs:
 
-- `hello.bas` - Simple hello world
-- `math.bas` - Mathematical operations
-- `loops.bas` - FOR-NEXT loop examples
-- `arrays.bas` - Array operations
-- `data.bas` - DATA/READ/RESTORE usage
-- `conditionals.bas` - IF-THEN-ELSE and GOTO
-- `strings.bas` - String operations
+| File               | Description                             |
+| ------------------ | --------------------------------------- |
+| `hello.bas`        | Simple hello world program              |
+| `math.bas`         | Mathematical operations and expressions |
+| `loops.bas`        | FOR-NEXT loop examples with STEP        |
+| `arrays.bas`       | Array declaration and manipulation      |
+| `data.bas`         | DATA/READ/RESTORE statement usage       |
+| `conditionals.bas` | IF-THEN-ELSE and GOTO statements        |
+| `strings.bas`      | String operations and concatenation     |
 
-## Architecture
+**Try running an example:**
+```bash
+deno run --allow-read main.ts examples/loops.bas
+```
 
-The interpreter consists of four main components:
+## 🏗️ Architecture
 
-1. **Lexer** (`lexer.ts`) - Tokenizes BASIC source code
-2. **Parser** (`parser.ts`) - Builds an Abstract Syntax Tree (AST)
-3. **Interpreter** (`interpreter.ts`) - Executes the AST
-4. **Main** (`main.ts`) - CLI interface and program entry point
+The interpreter follows a traditional three-phase design:
 
-## Error Handling
+```
+Source Code → Lexer → Tokens → Parser → AST → Interpreter → Output
+```
 
-The interpreter provides helpful error messages for:
-- Syntax errors during parsing
-- Runtime errors during execution
-- Line number references and error locations
+| Component       | File             | Responsibility                                             |
+| --------------- | ---------------- | ---------------------------------------------------------- |
+| **Lexer**       | `lexer.ts`       | Tokenizes BASIC source code into tokens                    |
+| **Parser**      | `parser.ts`      | Builds Abstract Syntax Tree (AST) from tokens              |
+| **Interpreter** | `interpreter.ts` | Executes the AST and manages runtime state                 |
+| **Types**       | `types.ts`       | Type definitions for tokens, AST nodes, and runtime values |
+| **Main**        | `main.ts`        | CLI interface and program entry point                      |
+| **Tests**       | `test.ts`        | Comprehensive test suite for all components                |
 
-## Limitations
+## 🔧 Development
 
-This is a simple educational interpreter with some limitations:
-- No user input (INPUT statement)
-- No file I/O operations
-- No subroutines (GOSUB/RETURN)
-- Limited built-in functions
-- No graphics or sound
+### Running Tests
+```bash
+deno run --allow-read test.ts
+```
 
-## Contributing
+### Type Checking
+```bash
+deno check *.ts
+```
 
-Feel free to extend the interpreter with additional BASIC features!
+## ⚠️ Error Handling
 
-## License
+The interpreter provides comprehensive error reporting:
+- **Syntax errors** with line and column information
+- **Runtime errors** with execution context
+- **Type errors** for invalid operations
+- **Array bounds checking**
+- **Variable reference validation**
 
-This project is open source and available under the MIT License.
+## 🚧 Known Limitations
+
+This educational interpreter has some intentional limitations:
+
+- ❌ No user input (`INPUT` statement)
+- ❌ No file I/O operations
+- ❌ No subroutines (`GOSUB`/`RETURN`)
+- ❌ Limited built-in functions
+- ❌ No graphics or sound capabilities
+- ❌ Single-threaded execution only
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch:** `git checkout -b feature/amazing-feature`
+3. **Make your changes and add tests**
+4. **Ensure tests pass:** `deno run --allow-read test.ts`
+5. **Commit your changes:** `git commit -m 'Add amazing feature'`
+6. **Push to the branch:** `git push origin feature/amazing-feature`
+7. **Open a Pull Request**
+
+### Ideas for Contributions
+- Add `INPUT` statement for user interaction
+- Implement `GOSUB`/`RETURN` for subroutines
+- Add more built-in mathematical functions
+- Improve error messages and debugging features
+- Add more comprehensive examples
+
+### Development Guidelines
+- Follow TypeScript best practices
+- Add tests for new features
+- Update documentation for new language features
+- Maintain backward compatibility
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by classic BASIC interpreters from the 1970s and 1980s
+- Built with modern TypeScript and Deno for educational purposes
