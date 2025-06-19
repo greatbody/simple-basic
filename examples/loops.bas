@@ -1,0 +1,18 @@
+10 REM FOR-NEXT loop demonstration
+20 PRINT "Counting from 1 to 10:"
+30 FOR I = 1 TO 10
+40 PRINT I;
+50 NEXT I
+60 PRINT
+70 PRINT "Counting by 2s from 0 to 20:"
+80 FOR J = 0 TO 20 STEP 2
+90 PRINT J;
+100 NEXT J
+110 PRINT
+120 PRINT "Countdown from 10 to 1:"
+130 FOR K = 10 TO 1 STEP -1
+140 PRINT K;
+150 NEXT K
+160 PRINT
+170 PRINT "Done!"
+180 END
